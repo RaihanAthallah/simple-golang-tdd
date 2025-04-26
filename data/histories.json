@@ -1,0 +1,22 @@
+[
+  {
+    "id": "history-001",
+    "customer_id": "cust-001",
+    "action": "login",
+    "timestamp": "2025-04-26T15:04:05Z"
+  },
+  {
+    "id": "history-002",
+    "customer_id": "cust-001",
+    "action": "payment",
+    "amount": 200000,
+    "merchant_id": "merchant-001",
+    "timestamp": "2025-04-26T15:10:00Z"
+  },
+  {
+    "id": "history-003",
+    "customer_id": "cust-001",
+    "action": "logout",
+    "timestamp": "2025-04-26T15:30:00Z"
+  }
+]
