@@ -9,6 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+// AuthController handles authentication-related operations
 type AuthController struct {
 	authService  service.AuthService
 	authvalidate *validator.Validate
@@ -19,8 +20,19 @@ func NewAuthController(service service.AuthService) *AuthController {
 	return &AuthController{authService: service, authvalidate: validate}
 }
 
+// Login godoc
+// @Summary      User Login
+// @Description  Logs in a user and returns access and refresh tokens
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  dto.UserCredentials  true  "User Credentials"
+// @Success      200  {object} dto.SuccessResponse  "login successful"
+// @Failure      400  {object} dto.ErrorResponse
+// @Failure      401  {object} dto.ErrorResponse
+// @Failure      500  {object} dto.ErrorResponse
+// @Router       /customer/login [post]
 func (ac *AuthController) Login(c *gin.Context) {
-	// fetch username and password from request body
 	var userCredentials dto.UserCredentials
 	err := c.BindJSON(&userCredentials)
 	if err != nil {
@@ -42,8 +54,18 @@ func (ac *AuthController) Login(c *gin.Context) {
 	utils.SuccessResponse(c, 200, "login successful", tokens)
 }
 
+// Logout godoc
+// @Summary      User Logout
+// @Description  Logs out a user by invalidating the token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        Authorization  header  string  true  "Authorization Bearer Token"
+// @Success      200  {object} dto.SuccessResponse
+// @Failure      401  {object} dto.ErrorResponse
+// @Failure      500  {object} dto.ErrorResponse
+// @Router       /customer/logout [post]
 func (ac *AuthController) Logout(c *gin.Context) {
-	// fetch token from request header
 	token := c.Request.Header.Get("Authorization")
 	if token == "" {
 		utils.ErrorResponse(c, 401, "please provide a token")
@@ -59,6 +81,17 @@ func (ac *AuthController) Logout(c *gin.Context) {
 	utils.SuccessResponse(c, 200, "logout successful", nil)
 }
 
+// RefreshToken godoc
+// @Summary      Refresh Access Token
+// @Description  Generates a new access token using a refresh token
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        body  body  dto.RefreshToken  true  "Refresh Token"
+// @Success      200  {object} dto.AccessTokenResponse  "Token refreshed successfully"
+// @Failure      400  {object} dto.ErrorResponse  "Invalid request body"
+// @Failure      500  {object} dto.ErrorResponse "Internal server error"
+// @Router       /customer/refresh-token [post]
 func (ac *AuthController) RefreshToken(c *gin.Context) {
 	var refreshToken dto.RefreshToken
 	err := c.BindJSON(&refreshToken)
@@ -78,7 +111,5 @@ func (ac *AuthController) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	// newAccessToken := dto.AccessTokenResponse{AccessToken: "new_dummy_token"}
 	utils.SuccessResponse(c, 200, "token refreshed successfully", newAccessToken)
-
 }

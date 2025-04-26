@@ -1,0 +1,147 @@
+basePath: /api/v1
+definitions:
+  dto.AccessTokenResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  dto.RefreshToken:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  dto.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      status:
+        type: integer
+    type: object
+  dto.UserCredentials:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: My Gin API
+  version: "1.0"
+paths:
+  /customer/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user and returns access and refresh tokens
+      parameters:
+      - description: User Credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserCredentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: login successful
+          schema:
+            $ref: '#/definitions/dto.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: User Login
+      tags:
+      - Auth
+  /customer/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logs out a user by invalidating the token
+      parameters:
+      - description: Authorization Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.SuccessResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: User Logout
+      tags:
+      - Auth
+  /customer/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: Generates a new access token using a refresh token
+      parameters:
+      - description: Refresh Token
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.RefreshToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token refreshed successfully
+          schema:
+            $ref: '#/definitions/dto.AccessTokenResponse'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Refresh Access Token
+      tags:
+      - Auth
+swagger: "2.0"
