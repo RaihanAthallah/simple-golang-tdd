@@ -6,6 +6,6 @@ type AuthRepository interface {
 type authRepositoryImpl struct {
 }
 
-func NewAuthAuthRepository() AuthRepository {
+func NewAuthRepository() AuthRepository {
 	return &authRepositoryImpl{}
 }
