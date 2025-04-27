@@ -1,22 +1,33 @@
 [
   {
-    "id": "history-001",
-    "customer_id": "cust-001",
-    "action": "login",
-    "timestamp": "2025-04-26T15:04:05Z"
-  },
-  {
-    "id": "history-002",
-    "customer_id": "cust-001",
-    "action": "payment",
-    "amount": 200000,
-    "merchant_id": "merchant-001",
-    "timestamp": "2025-04-26T15:10:00Z"
-  },
-  {
-    "id": "history-003",
-    "customer_id": "cust-001",
-    "action": "logout",
-    "timestamp": "2025-04-26T15:30:00Z"
+    "id": "d9fa27bb-f1f3-4f5a-99d9-5959f33c26a0",
+    "customer_id": "anonymous",
+    "status": "OK",
+    "action": "/api/v1/auth/ustomer/login",
+    "details": {
+      "headers": {
+        "Accept": ["application/json"],
+        "Accept-Encoding": ["gzip, deflate, br, zstd"],
+        "Accept-Language": ["en-US,en;q=0.9,ms;q=0.8"],
+        "Connection": ["keep-alive"],
+        "Content-Length": ["56"],
+        "Content-Type": ["application/json"],
+        "Cookie": ["session_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyYWloYW5AbWFpbC5jb20iLCJleHAiOjE3MTk0NzI0NzB9.iP4v74673L9ehhleTcUfWYlmzC8pPVIzDUARQOWpFBI"],
+        "Origin": ["http://localhost:8080"],
+        "Referer": ["http://localhost:8080/swagger/index.html"],
+        "Sec-Ch-Ua": ["\"Microsoft Edge\";v=\"135\", \"Not-A.Brand\";v=\"8\", \"Chromium\";v=\"135\""],
+        "Sec-Ch-Ua-Mobile": ["?0"],
+        "Sec-Ch-Ua-Platform": ["\"Windows\""],
+        "Sec-Fetch-Dest": ["empty"],
+        "Sec-Fetch-Mode": ["cors"],
+        "Sec-Fetch-Site": ["same-origin"],
+        "User-Agent": ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"]
+      },
+      "payload": {
+        "password": "password123",
+        "username": "johndoe"
+      }
+    },
+    "timestamp": "2025-04-27T14:09:37+07:00"
   }
 ]

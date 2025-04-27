@@ -1,1 +1,2 @@
-/data/*
+# Ignore all JSON files inside /data
+/data/*.json

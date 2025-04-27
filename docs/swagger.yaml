@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /
 definitions:
   dto.AccessTokenResponse:
     properties:
@@ -11,6 +11,16 @@ definitions:
         type: string
       status:
         type: integer
+    type: object
+  dto.PaymentRequest:
+    properties:
+      amount:
+        type: number
+      merchant_id:
+        type: string
+    required:
+    - amount
+    - merchant_id
     type: object
   dto.RefreshToken:
     properties:
@@ -51,7 +61,46 @@ info:
   title: My Gin API
   version: "1.0"
 paths:
-  /customer/login:
+  /api/v1/customer/payment:
+    post:
+      consumes:
+      - application/json
+      description: Customer payment reduces balance and send to merchant
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Payment Request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PaymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: payment successful
+          schema:
+            $ref: '#/definitions/dto.SuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Customer Payment to Merchant
+      tags:
+      - Customer
+  /user/v1/auth/login:
     post:
       consumes:
       - application/json
@@ -85,7 +134,7 @@ paths:
       summary: User Login
       tags:
       - Auth
-  /customer/logout:
+  /user/v1/auth/logout:
     post:
       consumes:
       - application/json
@@ -114,7 +163,7 @@ paths:
       summary: User Logout
       tags:
       - Auth
-  /customer/refresh-token:
+  /user/v1/auth/refresh-token:
     post:
       consumes:
       - application/json

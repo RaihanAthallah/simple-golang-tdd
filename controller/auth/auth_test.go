@@ -1,11 +1,10 @@
-package controller_test
+package controller
 
 import (
 	"bytes"
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"simple-golang-tdd/controller"
 	"simple-golang-tdd/dto"
 	"simple-golang-tdd/utils"
 	"testing"
@@ -20,7 +19,7 @@ func setupRouter(service *MockAuthService) *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.Default()
 
-	authCtrl := controller.NewAuthController(service)
+	authCtrl := NewAuthController(service)
 	r.POST("/v1/customer/login", authCtrl.Login)   // Fixed path
 	r.POST("/v1/customer/logout", authCtrl.Logout) // Fixed path
 	r.POST("/v1/customer/refresh-token", authCtrl.RefreshToken)
@@ -54,7 +53,7 @@ func TestLogin_Success(t *testing.T) {
 
 	mockService.On("Login", fakeUserData).Return(fakeAuthResponse, nil)
 
-	recorder, router := newRecorderAndRouter(mockService)
+	rec, router := newRecorderAndRouter(mockService)
 
 	payload := dto.UserCredentials{
 		Username: "user",
@@ -64,12 +63,12 @@ func TestLogin_Success(t *testing.T) {
 	req, err := utils.NewJSONRequest(http.MethodPost, "/v1/customer/login", payload)
 	require.NoError(t, err) // use require to fail immediately if request creation fails
 
-	router.ServeHTTP(recorder, req)
+	router.ServeHTTP(rec, req)
 
 	expectedResponseBody := utils.MarshalJSON(t, fakeResponseMessage)
 
-	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.JSONEq(t, expectedResponseBody, recorder.Body.String())
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.JSONEq(t, expectedResponseBody, rec.Body.String())
 	mockService.AssertExpectations(t)
 }
 
@@ -230,17 +229,17 @@ func TestRefreshToken_Success(t *testing.T) {
 
 	mockService.On("RefreshToken", payload).Return(fakeAccessToken, nil)
 
-	recorder, router := newRecorderAndRouter(mockService)
+	rec, router := newRecorderAndRouter(mockService)
 
 	req, err := utils.NewJSONRequest(http.MethodPost, "/v1/customer/refresh-token", payload)
 	require.NoError(t, err)
 
-	router.ServeHTTP(recorder, req)
+	router.ServeHTTP(rec, req)
 
 	expectedResponseBody := utils.MarshalJSON(t, fakeResponseMessage)
 
-	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.JSONEq(t, expectedResponseBody, recorder.Body.String())
+	assert.Equal(t, http.StatusOK, rec.Code)
+	assert.JSONEq(t, expectedResponseBody, rec.Body.String())
 	mockService.AssertExpectations(t)
 }
 
@@ -252,23 +251,22 @@ func TestRefreshToken_InvalidToken(t *testing.T) {
 	// Mocking RefreshToken to return an error
 	mockService.On("RefreshToken", payload).Return(dto.AccessTokenResponse{}, errors.New("invalid or expired refresh token"))
 
-	recorder, router := newRecorderAndRouter(mockService)
+	rec, router := newRecorderAndRouter(mockService)
 
 	req, err := utils.NewJSONRequest(http.MethodPost, "/v1/customer/refresh-token", payload)
 	require.NoError(t, err)
 
-	router.ServeHTTP(recorder, req)
+	router.ServeHTTP(rec, req)
 
 	expected := dto.ErrorResponse{
 		Status:  500,
 		Message: "internal server error", // Sesuai AuthController sekarang, kalo RefreshToken error, dia kasih 500
 	}
 
-	assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-	assert.JSONEq(t, utils.MarshalJSON(t, expected), recorder.Body.String())
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.JSONEq(t, utils.MarshalJSON(t, expected), rec.Body.String())
 	mockService.AssertExpectations(t)
 }
-
 
 func TestRefreshToken_MissingToken(t *testing.T) {
 	rec, router := newRecorderAndRouter(nil)

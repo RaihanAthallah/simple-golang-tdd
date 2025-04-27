@@ -1,13 +1,13 @@
 package routes
 
 import (
-	controller "simple-golang-tdd/controller"
+	controller "simple-golang-tdd/controller/auth"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupAuthRoutes(router *gin.RouterGroup, authController *controller.AuthController) {
-	authGroup := router.Group("/customer")
+	authGroup := router.Group("/auth")
 	{
 		authGroup.POST("/login", authController.Login)
 		authGroup.POST("/logout", authController.Logout)

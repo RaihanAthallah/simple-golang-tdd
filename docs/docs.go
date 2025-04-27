@@ -24,7 +24,66 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/customer/login": {
+        "/api/v1/customer/payment": {
+            "post": {
+                "description": "Customer payment reduces balance and send to merchant",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Customer"
+                ],
+                "summary": "Customer Payment to Merchant",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Payment Request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PaymentRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "payment successful",
+                        "schema": {
+                            "$ref": "#/definitions/dto.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/v1/auth/login": {
             "post": {
                 "description": "Logs in a user and returns access and refresh tokens",
                 "consumes": [
@@ -76,7 +135,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/customer/logout": {
+        "/user/v1/auth/logout": {
             "post": {
                 "description": "Logs out a user by invalidating the token",
                 "consumes": [
@@ -120,7 +179,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/customer/refresh-token": {
+        "/user/v1/auth/refresh-token": {
             "post": {
                 "description": "Generates a new access token using a refresh token",
                 "consumes": [
@@ -187,6 +246,21 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PaymentRequest": {
+            "type": "object",
+            "required": [
+                "amount",
+                "merchant_id"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "merchant_id": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.RefreshToken": {
             "type": "object",
             "required": [
@@ -232,7 +306,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "My Gin API",
 	Description:      "This is a sample server.",

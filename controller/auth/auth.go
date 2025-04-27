@@ -2,7 +2,7 @@ package controller
 
 import (
 	dto "simple-golang-tdd/dto"
-	"simple-golang-tdd/service"
+	authService "simple-golang-tdd/service/auth"
 	utils "simple-golang-tdd/utils"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +11,11 @@ import (
 
 // AuthController handles authentication-related operations
 type AuthController struct {
-	authService  service.AuthService
+	authService  authService.AuthService
 	authvalidate *validator.Validate
 }
 
-func NewAuthController(service service.AuthService) *AuthController {
+func NewAuthController(service authService.AuthService) *AuthController {
 	validate := validator.New()
 	return &AuthController{authService: service, authvalidate: validate}
 }
@@ -31,7 +31,7 @@ func NewAuthController(service service.AuthService) *AuthController {
 // @Failure      400  {object} dto.ErrorResponse
 // @Failure      401  {object} dto.ErrorResponse
 // @Failure      500  {object} dto.ErrorResponse
-// @Router       /customer/login [post]
+// @Router       /user/v1/auth/login [post]
 func (ac *AuthController) Login(c *gin.Context) {
 	var userCredentials dto.UserCredentials
 	err := c.BindJSON(&userCredentials)
@@ -64,7 +64,7 @@ func (ac *AuthController) Login(c *gin.Context) {
 // @Success      200  {object} dto.SuccessResponse
 // @Failure      401  {object} dto.ErrorResponse
 // @Failure      500  {object} dto.ErrorResponse
-// @Router       /customer/logout [post]
+// @Router       /user/v1/auth/logout [post]
 func (ac *AuthController) Logout(c *gin.Context) {
 	token := c.Request.Header.Get("Authorization")
 	if token == "" {
@@ -91,7 +91,7 @@ func (ac *AuthController) Logout(c *gin.Context) {
 // @Success      200  {object} dto.AccessTokenResponse  "Token refreshed successfully"
 // @Failure      400  {object} dto.ErrorResponse  "Invalid request body"
 // @Failure      500  {object} dto.ErrorResponse "Internal server error"
-// @Router       /customer/refresh-token [post]
+// @Router       /user/v1/auth/refresh-token [post]
 func (ac *AuthController) RefreshToken(c *gin.Context) {
 	var refreshToken dto.RefreshToken
 	err := c.BindJSON(&refreshToken)

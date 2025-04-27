@@ -4,10 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"simple-golang-tdd/controller"
-	"simple-golang-tdd/repository"
+	AuthController "simple-golang-tdd/controller/auth"
+	CustomerController "simple-golang-tdd/controller/customer"
+	"simple-golang-tdd/middleware"
 	"simple-golang-tdd/routes"
-	"simple-golang-tdd/service"
+
+	CustomerRepository "simple-golang-tdd/repository/customer"
+	HistoryRepository "simple-golang-tdd/repository/history"
+	MerchantRepository "simple-golang-tdd/repository/merchant"
+
+	AuthService "simple-golang-tdd/service/auth"
+	CustomerService "simple-golang-tdd/service/customer"
 
 	_ "simple-golang-tdd/docs"
 
@@ -30,9 +37,15 @@ import (
 // @license.url https://opensource.org/licenses/MIT
 
 // @host localhost:8080
-// @BasePath /api/v1
+// @BasePath /
 
 func main() {
+
+	// source data path
+	const customerDataPath = "./data/customers.json"
+	const historyDataPath = "./data/histories.json"
+	const merhacntDataPath = "./data/merchants.json"
+
 	// Membuat router Gin
 	router := gin.Default()
 
@@ -48,14 +61,41 @@ func main() {
 		),
 	)
 
-	authRepository := repository.NewAuthRepository()
-	authService := service.NewAuthService(authRepository)
-	authController := controller.NewAuthController(authService)
+	customerhRepository, err := CustomerRepository.NewCustomerRepository(customerDataPath)
+	if err != nil {
+		log.Fatalf("Failed to create customer repository: %v", err)
+	}
+	merchantRepository, err := MerchantRepository.NewMerchantRepository(merhacntDataPath)
+	if err != nil {
+		log.Fatalf("Failed to create merchant repository: %v", err)
+	}
+	historyRepository, err := HistoryRepository.NewHistoryRepository(historyDataPath)
+	if err != nil {
+		log.Fatalf("Failed to create history repository: %v", err)
+	}
 
-	authGroup := router.Group("/api/v1")
-	authGroup.Use()
+	authService := AuthService.NewAuthService(customerhRepository)
+	customerService := CustomerService.NewCustomerService(customerhRepository, merchantRepository)
+
+	authController := AuthController.NewAuthController(authService)
+	customerController := CustomerController.NewCustomerController(customerService)
+
+	router.Use(middleware.HistoryLoggerMiddleware(historyRepository))
+	noAuthGroup := router.Group("/user/v1")
+	noAuthGroup.Use()
 	{
-		routes.SetupAuthRoutes(authGroup, authController)
+		routes.SetupAuthRoutes(noAuthGroup, authController)
+	}
+
+	// Define the authGroup (authenticated routes)
+	authGroup := router.Group("/api/v1/")
+	authGroup.Use(middleware.JWTAuthMiddleware()) // Use authentication middleware here
+	{
+
+		routes.SetupCustomerRoutes(authGroup, customerController)
+		// Add routes that require authentication (e.g., user profile, protected resources)
+		// Example:
+		// authGroup.GET("/user", userController.GetUser)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
