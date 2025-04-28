@@ -147,6 +147,20 @@ Pendekatan yang digunakan dalam pengembangan aplikasi ini adalah **Test-Driven D
 
 ---
 
+## 🔒 Endpoint yang Membutuhkan Token
+
+### Proteksi Token
+
+- **POST** `/api/v1/customer/payment`
+
+Untuk mendapatkan token:
+
+- **POST** `/user/v1/auth/login`
+
+Setelah login berhasil, gunakan token pada header Authorization:
+
+```bash
+Authorization: Bearer <your_token>
 ```
 
-```
+---
